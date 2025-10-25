@@ -1,111 +1,1182 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MicroMatch — Demo</title>
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>MicroMatch - AI Credit Matching Platform</title>
+ <style>
+   * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+   }
+
+
+   :root {
+     --primary: #2563eb;
+     --primary-dark: #1e40af;
+     --secondary: #10b981;
+     --background: #ffffff;
+     --foreground: #0f172a;
+     --muted: #f1f5f9;
+     --muted-foreground: #64748b;
+     --border: #e2e8f0;
+     --destructive: #ef4444;
+   }
+
+
+   body {
+     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+     line-height: 1.6;
+     color: var(--foreground);
+     background: linear-gradient(135deg, var(--background) 0%, var(--muted) 50%, var(--background) 100%);
+     min-height: 100vh;
+   }
+
+
+   .container {
+     max-width: 1200px;
+     margin: 0 auto;
+     padding: 0 1rem;
+   }
+
+
+   /* Navigation */
+   nav {
+     background: rgba(255, 255, 255, 0.9);
+     backdrop-filter: blur(10px);
+     border-bottom: 1px solid var(--border);
+     position: sticky;
+     top: 0;
+     z-index: 100;
+   }
+
+
+   nav .container {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 1rem;
+   }
+
+
+   .logo {
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+     font-size: 1.25rem;
+     font-weight: bold;
+   }
+
+
+   .logo-icon {
+     width: 32px;
+     height: 32px;
+     background: var(--primary);
+     border-radius: 8px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     color: white;
+     font-weight: bold;
+   }
+
+
+   .nav-buttons {
+     display: flex;
+     gap: 1rem;
+     align-items: center;
+   }
+
+
+   /* Buttons */
+   .btn {
+     padding: 0.5rem 1.5rem;
+     border: none;
+     border-radius: 8px;
+     font-size: 1rem;
+     cursor: pointer;
+     transition: all 0.2s;
+     font-weight: 500;
+   }
+
+
+   .btn-primary {
+     background: var(--primary);
+     color: white;
+   }
+
+
+   .btn-primary:hover {
+     background: var(--primary-dark);
+   }
+
+
+   .btn-secondary {
+     background: transparent;
+     color: var(--foreground);
+     border: 1px solid var(--border);
+   }
+
+
+   .btn-secondary:hover {
+     background: var(--muted);
+   }
+
+
+   .btn-destructive {
+     background: var(--destructive);
+     color: white;
+   }
+
+
+   .btn-lg {
+     padding: 0.75rem 2rem;
+     font-size: 1.125rem;
+   }
+
+
+   /* Hero Section */
+   .hero {
+     text-align: center;
+     padding: 5rem 1rem;
+   }
+
+
+   .hero h1 {
+     font-size: 3.5rem;
+     font-weight: bold;
+     margin-bottom: 1.5rem;
+     line-height: 1.2;
+   }
+
+
+   .hero .highlight {
+     color: var(--primary);
+   }
+
+
+   .hero p {
+     font-size: 1.5rem;
+     color: var(--muted-foreground);
+     margin-bottom: 2rem;
+     max-width: 800px;
+     margin-left: auto;
+     margin-right: auto;
+   }
+
+
+   .hero-buttons {
+     display: flex;
+     gap: 1rem;
+     justify-content: center;
+     flex-wrap: wrap;
+   }
+
+
+   /* Cards */
+   .card {
+     background: white;
+     border: 1px solid var(--border);
+     border-radius: 12px;
+     padding: 1.5rem;
+     margin-bottom: 1.5rem;
+   }
+
+
+   .card-header {
+     margin-bottom: 1rem;
+   }
+
+
+   .card-title {
+     font-size: 1.5rem;
+     font-weight: bold;
+     margin-bottom: 0.5rem;
+   }
+
+
+   .card-description {
+     color: var(--muted-foreground);
+   }
+
+
+   /* Forms */
+   .form-group {
+     margin-bottom: 1.5rem;
+   }
+
+
+   .form-label {
+     display: block;
+     margin-bottom: 0.5rem;
+     font-weight: 500;
+   }
+
+
+   .form-input, .form-select, .form-textarea {
+     width: 100%;
+     padding: 0.75rem;
+     border: 1px solid var(--border);
+     border-radius: 8px;
+     font-size: 1rem;
+     font-family: inherit;
+   }
+
+
+   .form-textarea {
+     min-height: 120px;
+     resize: vertical;
+   }
+
+
+   .form-input:focus, .form-select:focus, .form-textarea:focus {
+     outline: none;
+     border-color: var(--primary);
+     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+   }
+
+
+   /* Progress Bar */
+   .progress {
+     width: 100%;
+     height: 8px;
+     background: var(--muted);
+     border-radius: 4px;
+     overflow: hidden;
+   }
+
+
+   .progress-bar {
+     height: 100%;
+     background: var(--primary);
+     transition: width 0.3s;
+   }
+
+
+   /* Badge */
+   .badge {
+     display: inline-block;
+     padding: 0.25rem 0.75rem;
+     border-radius: 6px;
+     font-size: 0.875rem;
+     font-weight: 500;
+   }
+
+
+   .badge-pending {
+     background: var(--muted);
+     color: var(--muted-foreground);
+   }
+
+
+   .badge-approved {
+     background: var(--secondary);
+     color: white;
+   }
+
+
+   .badge-rejected {
+     background: var(--destructive);
+     color: white;
+   }
+
+
+   /* Grid */
+   .grid {
+     display: grid;
+     gap: 1.5rem;
+   }
+
+
+   .grid-2 {
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+   }
+
+
+   /* Hidden */
+   .hidden {
+     display: none !important;
+   }
+
+
+   /* Score Breakdown */
+   .score-item {
+     margin-bottom: 1rem;
+   }
+
+
+   .score-header {
+     display: flex;
+     justify-content: space-between;
+     margin-bottom: 0.5rem;
+     font-size: 0.875rem;
+   }
+
+
+   /* Image Upload */
+   .image-upload {
+     border: 2px dashed var(--border);
+     border-radius: 8px;
+     padding: 2rem;
+     text-align: center;
+     cursor: pointer;
+     transition: all 0.2s;
+   }
+
+
+   .image-upload:hover {
+     border-color: var(--primary);
+     background: var(--muted);
+   }
+
+
+   .image-preview {
+     max-width: 100%;
+     max-height: 300px;
+     margin-top: 1rem;
+     border-radius: 8px;
+   }
+
+
+   .yolo-result {
+     margin-top: 1rem;
+     padding: 1rem;
+     background: var(--muted);
+     border-radius: 8px;
+     font-size: 0.875rem;
+   }
+
+
+   /* Responsive */
+   @media (max-width: 768px) {
+     .hero h1 {
+       font-size: 2rem;
+     }
+     .hero p {
+       font-size: 1.125rem;
+     }
+   }
+ </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
+ <!-- Navigation -->
+ <nav id="navbar">
+   <div class="container">
+     <div class="logo">
+       <div class="logo-icon">M</div>
+       <span>MicroMatch</span>
+     </div>
+     <div class="nav-buttons" id="navButtons"></div>
+   </div>
+ </nav>
 
-<!-- Auth Modal (visible immediately) -->
-<div id="auth-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center p-6 z-50">
-  <div class="bg-white w-full max-w-md rounded shadow-lg p-5">
-    <h3 id="auth-title" class="text-lg font-semibold mb-4">Login</h3>
-    <input id="auth-email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3"/>
-    <input id="auth-password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-3"/>
-    <button id="auth-submit" class="bg-indigo-600 text-white px-4 py-2 rounded w-full mb-3">Login</button>
-    <div class="text-sm text-gray-500 text-center">
-      <span id="toggle-auth-text">Don't have an account?</span>
-      <button id="toggle-auth" class="text-indigo-600 font-medium ml-1">Sign Up</button>
-    </div>
-  </div>
-</div>
 
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyBb23ZQezJjCIEAXyz5Ilms-USNP46y8_w",
-    authDomain: "lghacks2.firebaseapp.com",
-    projectId: "lghacks2",
-    storageBucket: "lghacks2.firebasestorage.app",
-    messagingSenderId: "332866350955",
-    appId: "1:332866350955:web:94b4b652da6f11230ce62e",
-    measurementId: "G-23YP64MPTJ"
-};
+ <!-- Main Content -->
+ <div id="app"></div>
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 
-// Login/Sign-up toggle
-let isLogin = true;
-const authModal = document.getElementById('auth-modal');
-const authTitle = document.getElementById('auth-title');
-const authSubmit = document.getElementById('auth-submit');
-const toggleText = document.getElementById('toggle-auth-text');
-const toggleBtn = document.getElementById('toggle-auth');
+ <script>
+   // State Management
+   const state = {
+     currentView: 'landing',
+     currentUser: null,
+     applications: []
+   };
 
-toggleBtn.onclick = () => {
-  isLogin = !isLogin;
-  if (isLogin) {
-    authTitle.textContent = 'Login';
-    authSubmit.textContent = 'Login';
-    toggleText.textContent = "Don't have an account?";
-    toggleBtn.textContent = 'Sign Up';
-  } else {
-    authTitle.textContent = 'Sign Up';
-    authSubmit.textContent = 'Sign Up';
-    toggleText.textContent = 'Already have an account?';
-    toggleBtn.textContent = 'Login';
-  }
-};
 
-// Submit handler
-authSubmit.onclick = async () => {
-  const email = document.getElementById('auth-email').value;
-  const password = document.getElementById('auth-password').value;
-  try {
-    if (isLogin) {
-      await auth.signInWithEmailAndPassword(email, password);
-    } else {
-      await auth.createUserWithEmailAndPassword(email, password);
+   // Initialize
+   function init() {
+     loadUser();
+     loadApplications();
+     render();
+   }
+
+
+   // Local Storage Functions
+   function loadUser() {
+     const user = localStorage.getItem('mmCurrentUser');
+     if (user) {
+       state.currentUser = JSON.parse(user);
+     }
+   }
+
+
+   function saveUser(user) {
+     state.currentUser = user;
+     localStorage.setItem('mmCurrentUser', JSON.stringify(user));
+   }
+
+
+   function logout() {
+     state.currentUser = null;
+     localStorage.removeItem('mmCurrentUser');
+     state.currentView = 'landing';
+     render();
+   }
+
+
+   function loadApplications() {
+     if (state.currentUser) {
+       if (state.currentUser.role === 'borrower') {
+         const apps = localStorage.getItem(`mmApplications_${state.currentUser.id}`);
+         state.applications = apps ? JSON.parse(apps) : [];
+       } else if (state.currentUser.role === 'lender') {
+         const apps = localStorage.getItem('mmAllApplications');
+         state.applications = apps ? JSON.parse(apps) : [];
+       }
+     }
+   }
+
+
+   function saveApplication(app) {
+     // Save to borrower's list
+     const borrowerApps = localStorage.getItem(`mmApplications_${app.borrowerId}`) || '[]';
+     const apps = JSON.parse(borrowerApps);
+     apps.push(app);
+     localStorage.setItem(`mmApplications_${app.borrowerId}`, JSON.stringify(apps));
+
+
+     // Save to all applications list
+     const allApps = localStorage.getItem('mmAllApplications') || '[]';
+     const allAppsArray = JSON.parse(allApps);
+     allAppsArray.push(app);
+     localStorage.setItem('mmAllApplications', JSON.stringify(allAppsArray));
+
+
+     loadApplications();
+   }
+
+
+   // Credit Score Calculation
+   function computeCreditScore(data) {
+     const { monthlyIncome, loanAmount, loanPurpose, repaymentHistory, alternativeDataScore } = data;
+
+
+     // Income vs Loan Ratio (30 points)
+     const ratio = monthlyIncome / loanAmount;
+     let incomeScore = 0;
+     if (ratio >= 0.5) incomeScore = 30;
+     else if (ratio >= 0.3) incomeScore = 20;
+     else if (ratio >= 0.2) incomeScore = 15;
+     else incomeScore = 10;
+
+
+     // Description Quality (25 points)
+     const descLength = loanPurpose.length;
+     let descScore = 0;
+     if (descLength >= 100) descScore = 25;
+     else if (descLength >= 50) descScore = 20;
+     else if (descLength >= 20) descScore = 15;
+     else descScore = 10;
+
+
+     // Repayment History (30 points)
+     const repaymentScore = repaymentHistory * 6;
+
+
+     // Alternative Data (15 points)
+     const altScore = alternativeDataScore * 3;
+
+
+     const totalScore = incomeScore + descScore + repaymentScore + altScore;
+
+
+     return {
+       total: totalScore,
+       breakdown: {
+         'Income vs Loan': incomeScore,
+         'Description Quality': descScore,
+         'Repayment History': repaymentScore,
+         'Alternative Data': altScore
+       }
+     };
+   }
+
+
+   // YOLO Integration (Placeholder for actual YOLO API)
+   async function analyzeImageWithYOLO(imageFile) {
+        const formData = new FormData();
+        formData.append('file', imageFile);
+
+        try {
+            const res = await fetch('http://localhost:8000/analyze-id', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!res.ok) throw new Error('Server error');
+
+        const data = await res.json();
+        return data;
+
+        } catch (err) {
+            console.error(err);
+            return {
+                detected: [],
+                confidence: 0,
+                verified: false,
+                message: 'Error analyzing image'
+            };
+        }
     }
-  } catch (err) {
-    alert(err.message);
-  }
-};
+    
 
-// Show modal until logged in
-auth.onAuthStateChanged(user => {
-  if (user) {
-    authModal.style.display = 'none';
-  } else {
-    authModal.style.display = 'flex';
-  }
-});
-</script>
 
-<!-- Page content -->
-<header class="bg-white shadow p-4 flex items-center justify-between">
-  <div class="flex items-center gap-3">
-    <div class="text-2xl">🏆 <strong>MicroMatch</strong></div>
-    <div class="text-sm text-gray-500">Connecting micro-entrepreneurs to the right lenders</div>
-  </div>
-  <div>
-    <button id="open-lender" class="bg-indigo-600 text-white px-4 py-2 rounded">Open Lender Dashboard</button>
-  </div>
-</header>
 
-<main class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-  <!-- Borrower panel and lender panel here... -->
-</main>
+   // Render Functions
+   function render() {
+     renderNav();
+     renderContent();
+   }
 
-<!-- Add your borrower form, lender dashboard, and chat modal as in your previous code -->
 
+   function renderNav() {
+     const navButtons = document.getElementById('navButtons');
+    
+     if (state.currentUser) {
+       navButtons.innerHTML = `
+         <span style="color: var(--muted-foreground); font-size: 0.875rem;">${state.currentUser.name}</span>
+         <button class="btn btn-secondary" onclick="logout()">Logout</button>
+       `;
+     } else {
+       navButtons.innerHTML = `
+         <button class="btn btn-secondary" onclick="showView('login')">Sign In</button>
+         <button class="btn btn-primary" onclick="showView('signup')">Get Started</button>
+       `;
+     }
+   }
+
+
+   function renderContent() {
+     const app = document.getElementById('app');
+    
+     switch(state.currentView) {
+       case 'landing':
+         app.innerHTML = renderLanding();
+         break;
+       case 'login':
+         app.innerHTML = renderLogin();
+         break;
+       case 'signup':
+         app.innerHTML = renderSignup();
+         break;
+       case 'borrower-dashboard':
+         app.innerHTML = renderBorrowerDashboard();
+         break;
+       case 'borrower-apply':
+         app.innerHTML = renderBorrowerApply();
+         break;
+       case 'lender-dashboard':
+         app.innerHTML = renderLenderDashboard();
+         break;
+     }
+   }
+
+
+   function showView(view) {
+     state.currentView = view;
+     render();
+   }
+
+
+   // Landing Page
+   function renderLanding() {
+     return `
+       <div class="hero">
+         <div class="container">
+           <h1>Connecting Micro-Entrepreneurs to the <span class="highlight">Right Lenders</span></h1>
+           <p>No traditional credit score needed. Fair loans powered by transparent, data-light AI for farmers, vendors, and artisans.</p>
+           <div class="hero-buttons">
+             <button class="btn btn-primary btn-lg" onclick="showView('signup')">Apply for Loan</button>
+             <button class="btn btn-secondary btn-lg" onclick="showView('signup')">Become a Lender</button>
+           </div>
+         </div>
+       </div>
+
+
+       <div class="container" style="padding: 4rem 1rem;">
+         <div class="grid grid-2">
+           <div class="card">
+             <div class="card-header">
+               <h3 class="card-title">🛡️ Transparent Scoring</h3>
+               <p class="card-description">See exactly how your credit score is calculated with clear breakdowns</p>
+             </div>
+           </div>
+           <div class="card">
+             <div class="card-header">
+               <h3 class="card-title">⚡ Fast Matching</h3>
+               <p class="card-description">Get matched with the right lenders in minutes, not weeks</p>
+             </div>
+           </div>
+           <div class="card">
+             <div class="card-header">
+               <h3 class="card-title">👥 Community Trust</h3>
+               <p class="card-description">Build your reputation through community lending history</p>
+             </div>
+           </div>
+           <div class="card">
+             <div class="card-header">
+               <h3 class="card-title">📈 Fair Rates</h3>
+               <p class="card-description">No middlemen means lower interest rates for borrowers</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     `;
+   }
+
+
+   // Login Page
+   function renderLogin() {
+     return `
+       <div class="container" style="max-width: 500px; padding: 4rem 1rem;">
+         <div class="card">
+           <div class="card-header">
+             <h2 class="card-title">Welcome Back</h2>
+             <p class="card-description">Sign in to your MicroMatch account</p>
+           </div>
+           <form onsubmit="handleLogin(event)">
+             <div class="form-group">
+               <label class="form-label">Email</label>
+               <input type="email" class="form-input" name="email" required>
+             </div>
+             <div class="form-group">
+               <label class="form-label">Password</label>
+               <input type="password" class="form-input" name="password" required>
+             </div>
+             <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+           </form>
+           <p style="text-align: center; margin-top: 1rem; color: var(--muted-foreground);">
+             Don't have an account? <a href="#" onclick="showView('signup'); return false;" style="color: var(--primary);">Sign up</a>
+           </p>
+         </div>
+       </div>
+     `;
+   }
+
+
+   // Signup Page
+   function renderSignup() {
+     return `
+       <div class="container" style="max-width: 500px; padding: 4rem 1rem;">
+         <div class="card">
+           <div class="card-header">
+             <h2 class="card-title">Create Account</h2>
+             <p class="card-description">Join MicroMatch today</p>
+           </div>
+           <form onsubmit="handleSignup(event)">
+             <div class="form-group">
+               <label class="form-label">Full Name</label>
+               <input type="text" class="form-input" name="name" required>
+             </div>
+             <div class="form-group">
+               <label class="form-label">Email</label>
+               <input type="email" class="form-input" name="email" required>
+             </div>
+             <div class="form-group">
+               <label class="form-label">Password</label>
+               <input type="password" class="form-input" name="password" required minlength="6">
+             </div>
+             <div class="form-group">
+               <label class="form-label">I am a</label>
+               <select class="form-select" name="role" required>
+                 <option value="">Select role</option>
+                 <option value="borrower">Borrower (seeking loan)</option>
+                 <option value="lender">Lender (providing loans)</option>
+               </select>
+             </div>
+             <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+           </form>
+           <p style="text-align: center; margin-top: 1rem; color: var(--muted-foreground);">
+             Already have an account? <a href="#" onclick="showView('login'); return false;" style="color: var(--primary);">Sign in</a>
+           </p>
+         </div>
+       </div>
+     `;
+   }
+
+
+   // Borrower Dashboard
+   function renderBorrowerDashboard() {
+     loadApplications();
+    
+     return `
+       <div class="container" style="padding: 2rem 1rem;">
+         <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Welcome back, ${state.currentUser.name.split(' ')[0]}!</h1>
+         <p style="color: var(--muted-foreground); font-size: 1.125rem; margin-bottom: 2rem;">Manage your loan applications and track your credit score</p>
+
+
+         <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none;">
+           <div class="card-header">
+             <h3 class="card-title" style="color: white;">Apply for a New Loan</h3>
+             <p style="color: rgba(255,255,255,0.9);">Get matched with the right lenders using our transparent AI scoring system</p>
+           </div>
+           <button class="btn btn-lg" style="background: white; color: var(--primary);" onclick="showView('borrower-apply')">Start New Application</button>
+         </div>
+
+
+         <h2 style="font-size: 1.75rem; margin: 2rem 0 1rem;">Your Applications</h2>
+         ${state.applications.length === 0 ? `
+           <div class="card" style="text-align: center; padding: 3rem;">
+             <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+             <h3 style="margin-bottom: 0.5rem;">No applications yet</h3>
+             <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Start your first loan application to get matched with lenders</p>
+             <button class="btn btn-primary" onclick="showView('borrower-apply')">Create Application</button>
+           </div>
+         ` : state.applications.map(app => `
+           <div class="card">
+             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+               <div>
+                 <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">$${app.loanAmount.toLocaleString()} Loan</h3>
+                 <p style="color: var(--muted-foreground);">${app.loanPurpose.substring(0, 100)}...</p>
+               </div>
+               <span class="badge badge-${app.status}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
+             </div>
+             <div style="margin-bottom: 1rem;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                 <span style="font-weight: 500;">Credit Score</span>
+                 <span style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${app.creditScore}/100</span>
+               </div>
+               <div class="progress">
+                 <div class="progress-bar" style="width: ${app.creditScore}%"></div>
+               </div>
+             </div>
+             <div class="grid grid-2">
+               ${Object.entries(app.scoreBreakdown).map(([key, value]) => `
+                 <div>
+                   <div style="color: var(--muted-foreground); font-size: 0.875rem;">${key}</div>
+                   <div style="font-weight: 600;">${value} pts</div>
+                 </div>
+               `).join('')}
+             </div>
+             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--muted-foreground);">
+               Applied on ${new Date(app.createdAt).toLocaleDateString()}
+             </div>
+           </div>
+         `).join('')}
+       </div>
+     `;
+   }
+
+
+   // Borrower Apply
+   function renderBorrowerApply() {
+     return `
+       <div class="container" style="max-width: 800px; padding: 2rem 1rem;">
+         <button class="btn btn-secondary" onclick="showView('borrower-dashboard')" style="margin-bottom: 1rem;">← Back to Dashboard</button>
+        
+         <div class="card">
+           <div class="card-header">
+             <h2 class="card-title">Loan Application</h2>
+             <p class="card-description">Fill out your information to get your transparent credit score</p>
+           </div>
+          
+           <form onsubmit="handleApplicationSubmit(event)">
+             <div class="form-group">
+               <label class="form-label">Monthly Income ($)</label>
+               <input type="number" class="form-input" name="monthlyIncome" required min="0" step="0.01">
+             </div>
+
+
+             <div class="form-group">
+               <label class="form-label">Loan Amount Requested ($)</label>
+               <input type="number" class="form-input" name="loanAmount" required min="0" step="0.01">
+             </div>
+
+
+             <div class="form-group">
+               <label class="form-label">Loan Purpose</label>
+               <textarea class="form-textarea" name="loanPurpose" required placeholder="Describe how you will use this loan and how it will help your business..."></textarea>
+               <small style="color: var(--muted-foreground);">Detailed descriptions improve your credit score</small>
+             </div>
+
+
+             <div class="form-group">
+               <label class="form-label">Repayment History (0-5)</label>
+               <select class="form-select" name="repaymentHistory" required>
+                 <option value="">Select your history</option>
+                 <option value="0">0 - No previous loans</option>
+                 <option value="1">1 - Poor history</option>
+                 <option value="2">2 - Fair history</option>
+                 <option value="3">3 - Good history</option>
+                 <option value="4">4 - Very good history</option>
+                 <option value="5">5 - Excellent history</option>
+               </select>
+             </div>
+
+
+             <div class="form-group">
+               <label class="form-label">Upload ID for Verification (YOLO Detection)</label>
+               <div class="image-upload" onclick="document.getElementById('idUpload').click()">
+                 <input type="file" id="idUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                 <div id="uploadText">
+                   <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                   <p>Click to upload your ID card</p>
+                   <small style="color: var(--muted-foreground);">AI will verify your identity</small>
+                 </div>
+                 <img id="imagePreview" class="image-preview hidden">
+               </div>
+               <div id="yoloResult" class="yolo-result hidden"></div>
+             </div>
+
+
+             <input type="hidden" name="alternativeDataScore" id="alternativeDataScore" value="3">
+
+
+             <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Submit Application</button>
+           </form>
+         </div>
+       </div>
+     `;
+   }
+
+
+   // Lender Dashboard
+   function renderLenderDashboard() {
+     loadApplications();
+     const pendingCount = state.applications.filter(app => app.status === 'pending').length;
+     const approvedCount = state.applications.filter(app => app.status === 'approved').length;
+
+
+     return `
+       <div class="container" style="padding: 2rem 1rem;">
+         <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Lender Dashboard</h1>
+         <p style="color: var(--muted-foreground); font-size: 1.125rem; margin-bottom: 2rem;">Review borrower applications with transparent AI credit scores</p>
+
+
+         <div class="grid grid-2" style="margin-bottom: 2rem;">
+           <div class="card">
+             <p style="color: var(--muted-foreground); margin-bottom: 0.5rem;">Total Applications</p>
+             <h3 style="font-size: 2rem; font-weight: bold;">${state.applications.length}</h3>
+           </div>
+           <div class="card">
+             <p style="color: var(--muted-foreground); margin-bottom: 0.5rem;">Pending Review</p>
+             <h3 style="font-size: 2rem; font-weight: bold;">${pendingCount}</h3>
+           </div>
+           <div class="card">
+             <p style="color: var(--muted-foreground); margin-bottom: 0.5rem;">Approved</p>
+             <h3 style="font-size: 2rem; font-weight: bold; color: var(--secondary);">${approvedCount}</h3>
+           </div>
+         </div>
+
+
+         <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">Borrower Applications (${state.applications.length})</h2>
+         ${state.applications.length === 0 ? `
+           <div class="card" style="text-align: center; padding: 3rem;">
+             <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+             <h3 style="margin-bottom: 0.5rem;">No applications yet</h3>
+             <p style="color: var(--muted-foreground);">Waiting for borrowers to submit applications</p>
+           </div>
+         ` : state.applications.sort((a, b) => b.creditScore - a.creditScore).map(app => `
+           <div class="card" style="cursor: pointer;" onclick='viewApplicationDetails(${JSON.stringify(app).replace(/'/g, "&apos;")})'>
+             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+               <div style="flex: 1;">
+                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                   <h3 style="font-size: 1.25rem;">${app.borrowerName}</h3>
+                   <span class="badge badge-${app.status}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
+                 </div>
+                 <p style="color: var(--muted-foreground);">${app.loanPurpose.substring(0, 100)}...</p>
+               </div>
+               <div style="text-align: right; margin-left: 1rem;">
+                 <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">${app.creditScore}</div>
+                 <div style="font-size: 0.75rem; color: var(--muted-foreground);">Credit Score</div>
+               </div>
+             </div>
+             <div class="progress" style="margin-bottom: 1rem;">
+               <div class="progress-bar" style="width: ${app.creditScore}%"></div>
+             </div>
+             <div class="grid grid-2">
+               <div>
+                 <div style="color: var(--muted-foreground); font-size: 0.875rem;">Loan Amount</div>
+                 <div style="font-weight: 600;">$${app.loanAmount.toLocaleString()}</div>
+               </div>
+               <div>
+                 <div style="color: var(--muted-foreground); font-size: 0.875rem;">Monthly Income</div>
+                 <div style="font-weight: 600;">$${app.monthlyIncome.toLocaleString()}</div>
+               </div>
+               <div>
+                 <div style="color: var(--muted-foreground); font-size: 0.875rem;">Repayment History</div>
+                 <div style="font-weight: 600;">${app.repaymentHistory}/5</div>
+               </div>
+               <div>
+                 <div style="color: var(--muted-foreground); font-size: 0.875rem;">Applied</div>
+                 <div style="font-weight: 600;">${new Date(app.createdAt).toLocaleDateString()}</div>
+               </div>
+             </div>
+           </div>
+         `).join('')}
+       </div>
+
+
+       <!-- Modal for Application Details -->
+       <div id="appModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
+         <div class="card" style="max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+           <div id="modalContent"></div>
+         </div>
+       </div>
+     `;
+   }
+
+
+   // Event Handlers
+   function handleLogin(e) {
+     e.preventDefault();
+     const formData = new FormData(e.target);
+     const email = formData.get('email');
+     const password = formData.get('password');
+
+
+     // Simple auth check (in production, use proper authentication)
+     const users = JSON.parse(localStorage.getItem('mmUsers') || '[]');
+     const user = users.find(u => u.email === email && u.password === password);
+
+
+     if (user) {
+       saveUser(user);
+       state.currentView = user.role === 'borrower' ? 'borrower-dashboard' : 'lender-dashboard';
+       render();
+     } else {
+       alert('Invalid credentials');
+     }
+   }
+
+
+   function handleSignup(e) {
+     e.preventDefault();
+     const formData = new FormData(e.target);
+    
+     const user = {
+       id: Date.now().toString(),
+       name: formData.get('name'),
+       email: formData.get('email'),
+       password: formData.get('password'),
+       role: formData.get('role')
+     };
+
+
+     // Save user
+     const users = JSON.parse(localStorage.getItem('mmUsers') || '[]');
+     users.push(user);
+     localStorage.setItem('mmUsers', JSON.stringify(users));
+
+
+     saveUser(user);
+     state.currentView = user.role === 'borrower' ? 'borrower-dashboard' : 'lender-dashboard';
+     render();
+   }
+
+
+   async function handleImageUpload(e) {
+     const file = e.target.files[0];
+     if (!file) return;
+
+
+     // Show preview
+     const reader = new FileReader();
+     reader.onload = function(event) {
+       const preview = document.getElementById('imagePreview');
+       preview.src = event.target.result;
+       preview.classList.remove('hidden');
+       document.getElementById('uploadText').classList.add('hidden');
+     };
+     reader.readAsDataURL(file);
+
+
+     // Analyze with YOLO
+     const resultDiv = document.getElementById('yoloResult');
+     resultDiv.innerHTML = '<p>🔄 Analyzing ID with YOLO...</p>';
+     resultDiv.classList.remove('hidden');
+
+
+     try {
+       const result = await analyzeImageWithYOLO(file);
+      
+       if (result.verified) {
+         resultDiv.innerHTML = `
+           <p style="color: var(--secondary); font-weight: 600;">✅ ${result.message}</p>
+           <p style="margin-top: 0.5rem;">Detected: ${result.detected.join(', ')}</p>
+           <p>Confidence: ${(result.confidence * 100).toFixed(1)}%</p>
+         `;
+         // Boost alternative data score for verified ID
+         document.getElementById('alternativeDataScore').value = '5';
+       } else {
+         resultDiv.innerHTML = `
+           <p style="color: var(--destructive); font-weight: 600;">❌ ID verification failed</p>
+           <p style="margin-top: 0.5rem;">Please upload a clear photo of your ID</p>
+         `;
+         document.getElementById('alternativeDataScore').value = '2';
+       }
+     } catch (error) {
+       resultDiv.innerHTML = `<p style="color: var(--destructive);">Error analyzing image</p>`;
+     }
+   }
+
+
+   function handleApplicationSubmit(e) {
+     e.preventDefault();
+     const formData = new FormData(e.target);
+
+
+     const data = {
+       monthlyIncome: parseFloat(formData.get('monthlyIncome')),
+       loanAmount: parseFloat(formData.get('loanAmount')),
+       loanPurpose: formData.get('loanPurpose'),
+       repaymentHistory: parseInt(formData.get('repaymentHistory')),
+       alternativeDataScore: parseInt(formData.get('alternativeDataScore'))
+     };
+
+
+     const score = computeCreditScore(data);
+
+
+     const application = {
+       id: Date.now().toString(),
+       borrowerId: state.currentUser.id,
+       borrowerName: state.currentUser.name,
+       borrowerEmail: state.currentUser.email,
+       ...data,
+       creditScore: score.total,
+       scoreBreakdown: score.breakdown,
+       status: 'pending',
+       createdAt: new Date().toISOString()
+     };
+
+
+     saveApplication(application);
+     state.currentView = 'borrower-dashboard';
+     render();
+     alert('Application submitted successfully!');
+   }
+
+
+   function viewApplicationDetails(app) {
+     const modal = document.getElementById('appModal');
+     const content = document.getElementById('modalContent');
+    
+     content.innerHTML = `
+       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+         <div>
+           <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">${app.borrowerName}</h2>
+           <p style="color: var(--muted-foreground);">Application Details & Credit Score Breakdown</p>
+         </div>
+         <button class="btn btn-secondary" onclick="closeModal()">✕</button>
+       </div>
+
+
+       <div style="text-align: center; padding: 2rem; background: var(--muted); border-radius: 8px; margin-bottom: 1.5rem;">
+         <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">${app.creditScore}/100</div>
+         <div class="progress" style="max-width: 300px; margin: 0 auto;">
+           <div class="progress-bar" style="width: ${app.creditScore}%"></div>
+         </div>
+         <p style="color: var(--muted-foreground); margin-top: 1rem;">
+           ${app.creditScore >= 70 ? 'Excellent creditworthiness' : app.creditScore >= 50 ? 'Good credit profile' : 'Fair credit profile'}
+         </p>
+       </div>
+
+
+       <div style="margin-bottom: 1.5rem;">
+         <h3 style="font-weight: 600; margin-bottom: 1rem;">Transparent Score Breakdown</h3>
+         ${Object.entries(app.scoreBreakdown).map(([key, value]) => {
+           const maxPoints = key === 'Income vs Loan' ? 30 : key === 'Description Quality' ? 25 : key === 'Repayment History' ? 30 : 15;
+           return `
+             <div class="score-item">
+               <div class="score-header">
+                 <span style="font-weight: 500;">${key}</span>
+                 <span style="font-weight: 600;">${value}/${maxPoints} pts</span>
+               </div>
+               <div class="progress">
+                 <div class="progress-bar" style="width: ${(value / maxPoints) * 100}%"></div>
+               </div>
+             </div>
+           `;
+         }).join('')}
+       </div>
+
+
+       <div class="grid grid-2" style="margin-bottom: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+         <div>
+           <div style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.25rem;">Loan Amount</div>
+           <div style="font-size: 1.125rem; font-weight: 600;">$${app.loanAmount.toLocaleString()}</div>
+         </div>
+         <div>
+           <div style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.25rem;">Monthly Income</div>
+           <div style="font-size: 1.125rem; font-weight: 600;">$${app.monthlyIncome.toLocaleString()}</div>
+         </div>
+         <div>
+           <div style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.25rem;">Repayment History</div>
+           <div style="font-size: 1.125rem; font-weight: 600;">${app.repaymentHistory}/5</div>
+         </div>
+         <div>
+           <div style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.25rem;">Alternative Data</div>
+           <div style="font-size: 1.125rem; font-weight: 600;">${app.alternativeDataScore}/5</div>
+         </div>
+       </div>
+
+
+       <div style="margin-bottom: 1.5rem;">
+         <div style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.5rem;">Loan Purpose</div>
+         <div style="padding: 1rem; background: var(--muted); border-radius: 8px; font-size: 0.875rem; line-height: 1.6;">${app.loanPurpose}</div>
+       </div>
+
+
+       <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+         <span style="color: var(--muted-foreground); font-size: 0.875rem;">Current Status:</span>
+         <span class="badge badge-${app.status}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
+       </div>
+
+
+       ${app.status === 'pending' ? `
+         <div style="display: flex; gap: 1rem;">
+           <button class="btn btn-secondary" style="flex: 1;" onclick="updateApplicationStatus('${app.id}', 'rejected')">Reject</button>
+           <button class="btn btn-primary" style="flex: 1;" onclick="updateApplicationStatus('${app.id}', 'approved')">Approve</button>
+         </div>
+       ` : ''}
+     `;
+
+
+     modal.classList.remove('hidden');
+   }
+
+
+   function closeModal() {
+     document.getElementById('appModal').classList.add('hidden');
+   }
+
+
+   function updateApplicationStatus(appId, newStatus) {
+     // Update in all applications
+     const allApps = JSON.parse(localStorage.getItem('mmAllApplications') || '[]');
+     const updatedAllApps = allApps.map(app =>
+       app.id === appId ? { ...app, status: newStatus } : app
+     );
+     localStorage.setItem('mmAllApplications', JSON.stringify(updatedAllApps));
+
+
+     // Update in borrower's list
+     const app = allApps.find(a => a.id === appId);
+     if (app) {
+       const borrowerApps = JSON.parse(localStorage.getItem(`mmApplications_${app.borrowerId}`) || '[]');
+       const updatedBorrowerApps = borrowerApps.map(a =>
+         a.id === appId ? { ...a, status: newStatus } : a
+       );
+       localStorage.setItem(`mmApplications_${app.borrowerId}`, JSON.stringify(updatedBorrowerApps));
+     }
+
+
+     closeModal();
+     loadApplications();2
+     render();
+   }
+
+
+   // Initialize app
+   init();
+ </script>
 </body>
 </html>
+
+
+
+
+
