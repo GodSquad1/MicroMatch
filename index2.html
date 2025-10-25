@@ -41,7 +41,7 @@
    }
 
 
-   /* Navigation */
+   
    nav {
      background: rgba(255, 255, 255, 0.9);
      backdrop-filter: blur(10px);
@@ -89,7 +89,7 @@
    }
 
 
-   /* Buttons */
+   
    .btn {
      padding: 0.5rem 1.5rem;
      border: none;
@@ -136,7 +136,7 @@
    }
 
 
-   /* Hero Section */
+   
    .hero {
      text-align: center;
      padding: 5rem 1rem;
@@ -174,7 +174,7 @@
    }
 
 
-   /* Cards */
+   
    .card {
      background: white;
      border: 1px solid var(--border);
@@ -201,7 +201,7 @@
    }
 
 
-   /* Forms */
+   
    .form-group {
      margin-bottom: 1.5rem;
    }
@@ -237,7 +237,7 @@
    }
 
 
-   /* Progress Bar */
+   
    .progress {
      width: 100%;
      height: 8px;
@@ -254,7 +254,7 @@
    }
 
 
-   /* Badge */
+   
    .badge {
      display: inline-block;
      padding: 0.25rem 0.75rem;
@@ -282,7 +282,7 @@
    }
 
 
-   /* Grid */
+   
    .grid {
      display: grid;
      gap: 1.5rem;
@@ -294,13 +294,13 @@
    }
 
 
-   /* Hidden */
+   
    .hidden {
      display: none !important;
    }
 
 
-   /* Score Breakdown */
+   
    .score-item {
      margin-bottom: 1rem;
    }
@@ -314,7 +314,7 @@
    }
 
 
-   /* Image Upload */
+   
    .image-upload {
      border: 2px dashed var(--border);
      border-radius: 8px;
@@ -348,7 +348,7 @@
    }
 
 
-   /* Responsive */
+  
    @media (max-width: 768px) {
      .hero h1 {
        font-size: 2rem;
@@ -360,7 +360,6 @@
  </style>
 </head>
 <body>
- <!-- Navigation -->
  <nav id="navbar">
    <div class="container">
      <div class="logo">
@@ -371,8 +370,6 @@
    </div>
  </nav>
 
-
- <!-- Main Content -->
  <div id="app"></div>
 
 
@@ -385,7 +382,6 @@
    };
 
 
-   // Initialize
    function init() {
      loadUser();
      loadApplications();
@@ -393,7 +389,7 @@
    }
 
 
-   // Local Storage Functions
+   
    function loadUser() {
      const user = localStorage.getItem('mmCurrentUser');
      if (user) {
@@ -430,14 +426,14 @@
 
 
    function saveApplication(app) {
-     // Save to borrower's list
+     
      const borrowerApps = localStorage.getItem(`mmApplications_${app.borrowerId}`) || '[]';
      const apps = JSON.parse(borrowerApps);
      apps.push(app);
      localStorage.setItem(`mmApplications_${app.borrowerId}`, JSON.stringify(apps));
 
 
-     // Save to all applications list
+     
      const allApps = localStorage.getItem('mmAllApplications') || '[]';
      const allAppsArray = JSON.parse(allApps);
      allAppsArray.push(app);
@@ -448,34 +444,28 @@
    }
 
 
-   // Credit Score Calculation
+
    function computeCreditScore(data) {
      const { monthlyIncome, loanAmount, loanPurpose, repaymentHistory, alternativeDataScore } = data;
 
 
-     // Income vs Loan Ratio (30 points)
+
      const ratio = monthlyIncome / loanAmount;
      let incomeScore = 0;
      if (ratio >= 0.5) incomeScore = 30;
-     else if (ratio >= 0.3) incomeScore = 20;
-     else if (ratio >= 0.2) incomeScore = 15;
-     else incomeScore = 10;
+     else if (ratio >= 0.3) incomeScore = 25;
+     else if (ratio >= 0.2) incomeScore = 20;
+     else incomeScore = Math.floor(Math.random(10,15));
 
-
-     // Description Quality (25 points)
      const descLength = loanPurpose.length;
      let descScore = 0;
      if (descLength >= 100) descScore = 25;
      else if (descLength >= 50) descScore = 20;
      else if (descLength >= 20) descScore = 15;
-     else descScore = 10;
+     else descScore = Math.floor(Math.random(10,15));
 
-
-     // Repayment History (30 points)
      const repaymentScore = repaymentHistory * 6;
 
-
-     // Alternative Data (15 points)
      const altScore = alternativeDataScore * 3;
 
 
@@ -494,7 +484,6 @@
    }
 
 
-   // YOLO Integration (Placeholder for actual YOLO API)
    async function analyzeImageWithYOLO(imageFile) {
         const formData = new FormData();
         formData.append('file', imageFile);
@@ -521,10 +510,6 @@
         }
     }
     
-
-
-
-   // Render Functions
    function render() {
      renderNav();
      renderContent();
@@ -580,13 +565,13 @@
    }
 
 
-   // Landing Page
+
    function renderLanding() {
      return `
        <div class="hero">
          <div class="container">
-           <h1>Connecting Micro-Entrepreneurs to the <span class="highlight">Right Lenders</span></h1>
-           <p>No traditional credit score needed. Fair loans powered by transparent, data-drivens AI for farmers, vendors, and more!</p>
+           <h1>Funding That Fits Your Vision.</span></h1>
+           <p>Fair financing made simple: powered by transparent, AI-driven insights, not traditional credit scores.</p>
            <div class="hero-buttons">
              <button class="btn btn-primary btn-lg" onclick="showView('signup')">Apply for Loan</button>
              <button class="btn btn-secondary btn-lg" onclick="showView('signup')">Become a Lender</button>
@@ -600,13 +585,13 @@
            <div class="card">
              <div class="card-header">
                <h3 class="card-title">Transparent Scoring</h3>
-               <p class="card-description">See exactly how your credit score is calculated with clear breakdowns!</p>
+               <p class="card-description">Understand every factor behind your credit score with detailed, transparent breakdowns.</p>
              </div>
            </div>
            <div class="card">
              <div class="card-header">
                <h3 class="card-title">Fast Matching</h3>
-               <p class="card-description">Get matched with the right lenders in minutes, not weeks!</p>
+               <p class="card-description">Find your perfect lender match in minutes, not weeks.</p>
              </div>
            </div>
            <div class="card">
@@ -618,7 +603,7 @@
            <div class="card">
              <div class="card-header">
                <h3 class="card-title">Fair Rates</h3>
-               <p class="card-description">No middlemen means lower interest rates for borrowers!</p>
+               <p class="card-description">Direct lending means better rates and fairer terms.</p>
              </div>
            </div>
          </div>
@@ -634,7 +619,7 @@
          <div class="card">
            <div class="card-header">
              <h2 class="card-title">Welcome Back</h2>
-             <p class="card-description">Sign in to your MicroMatch account</p>
+             <p class="card-description">Sign in to your account</p>
            </div>
            <form onsubmit="handleLogin(event)">
              <div class="form-group">
@@ -719,9 +704,9 @@
          <h2 style="font-size: 1.75rem; margin: 2rem 0 1rem;">Your Applications</h2>
          ${state.applications.length === 0 ? `
            <div class="card" style="text-align: center; padding: 3rem;">
-             <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+             <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
              <h3 style="margin-bottom: 0.5rem;">No applications yet</h3>
-             <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Start your first loan application to get matched with lenders</p>
+             <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Start your loan application to get matched with lenders</p>
              <button class="btn btn-primary" onclick="showView('borrower-apply')">Create Application</button>
            </div>
          ` : state.applications.map(app => `
@@ -760,7 +745,6 @@
    }
 
 
-   // Borrower Apply
    function renderBorrowerApply() {
      return `
        <div class="container" style="max-width: 800px; padding: 2rem 1rem;">
@@ -769,7 +753,7 @@
          <div class="card">
            <div class="card-header">
              <h2 class="card-title">Loan Application</h2>
-             <p class="card-description">Fill out your information to get your transparent credit score</p>
+             <p class="card-description">Fill in your info to unlock your transparent credit score report.</p>
            </div>
           
            <form onsubmit="handleApplicationSubmit(event)">
@@ -788,7 +772,7 @@
              <div class="form-group">
                <label class="form-label">Loan Purpose</label>
                <textarea class="form-textarea" name="loanPurpose" required placeholder="Describe how you will use this loan and how it will help your business..."></textarea>
-               <small style="color: var(--muted-foreground);">Detailed descriptions improve your credit score</small>
+               <small style="color: var(--muted-foreground);">Adding detailed information helps boost the accuracy of your credit score.</small>
              </div>
 
 
@@ -811,9 +795,9 @@
                <div class="image-upload" onclick="document.getElementById('idUpload').click()">
                  <input type="file" id="idUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                  <div id="uploadText">
-                   <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                   <div style="font-size: 2rem; margin-bottom: 0.5rem;"></div>
                    <p>Click to upload your ID card</p>
-                   <small style="color: var(--muted-foreground);">AI will verify your identity</small>
+                   <small style="color: var(--muted-foreground);">AI Identity Verification</small>
                  </div>
                  <img id="imagePreview" class="image-preview hidden">
                </div>
@@ -832,7 +816,7 @@
    }
 
 
-   // Lender Dashboard
+
    function renderLenderDashboard() {
      loadApplications();
      const pendingCount = state.applications.filter(app => app.status === 'pending').length;
@@ -864,7 +848,7 @@
          <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">Borrower Applications (${state.applications.length})</h2>
          ${state.applications.length === 0 ? `
            <div class="card" style="text-align: center; padding: 3rem;">
-             <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+             <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
              <h3 style="margin-bottom: 0.5rem;">No applications yet</h3>
              <p style="color: var(--muted-foreground);">Waiting for borrowers to submit applications</p>
            </div>
@@ -919,7 +903,7 @@
    }
 
 
-   // Event Handlers
+
    function handleLogin(e) {
      e.preventDefault();
      const formData = new FormData(e.target);
@@ -927,7 +911,6 @@
      const password = formData.get('password');
 
 
-     // Simple auth check (in production, use proper authentication)
      const users = JSON.parse(localStorage.getItem('mmUsers') || '[]');
      const user = users.find(u => u.email === email && u.password === password);
 
@@ -972,7 +955,7 @@
      if (!file) return;
 
 
-     // Show preview
+
      const reader = new FileReader();
      reader.onload = function(event) {
        const preview = document.getElementById('imagePreview');
@@ -983,9 +966,9 @@
      reader.readAsDataURL(file);
 
 
-     // Analyze with YOLO
+
      const resultDiv = document.getElementById('yoloResult');
-     resultDiv.innerHTML = '<p>🔄 Analyzing ID with YOLO...</p>';
+     resultDiv.innerHTML = '<p>'Analyzing your ID using YOLO ...</p>';
      resultDiv.classList.remove('hidden');
 
 
@@ -1002,7 +985,7 @@
          document.getElementById('alternativeDataScore').value = '5';
        } else {
          resultDiv.innerHTML = `
-           <p style="font-weight: 600;"> Approved, will be forwarded to the human.</p>
+           <p style="font-weight: 600;"> Please submit it again.</p>
            <p style="margin-top: 0.5rem;">Thank you for choosing MicroMatch!</p>
          `;
          document.getElementById('alternativeDataScore').value = '2';
@@ -1070,7 +1053,7 @@
            <div class="progress-bar" style="width: ${app.creditScore}%"></div>
          </div>
          <p style="color: var(--muted-foreground); margin-top: 1rem;">
-           ${app.creditScore >= 70 ? 'Excellent creditworthiness' : app.creditScore >= 50 ? 'Good credit profile' : 'Fair credit profile'}
+           ${app.creditScore >= 70 ? 'Excellent credit score' : app.creditScore >= 50 ? 'Good credit profile' : 'Fair credit profile'}
          </p>
        </div>
 
@@ -1170,7 +1153,7 @@
    }
 
 
-   // Initialize app
+   
    init();
  </script>
 </body>
