@@ -4,16 +4,16 @@ from ultralytics import YOLO
 from PIL import Image
 import io
 
-# Load your custom YOLO model
+
 model = YOLO("dt.pt")
 
 
 app = FastAPI()
 
-# Allow requests from your frontend
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # in production, restrict this
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,14 +22,14 @@ app.add_middleware(
 @app.post("/analyze-id")
 async def analyze_id(file: UploadFile = File(...)):
     try:
-        # Read image
+        
         img_bytes = await file.read()
         img = Image.open(io.BytesIO(img_bytes))
 
-        # Run YOLO prediction
+        
         results = model(img)
 
-        # Extract results
+        
         detected_labels = []
         confidences = []
 
@@ -60,4 +60,4 @@ async def analyze_id(file: UploadFile = File(...)):
     
 @app.get("/")
 def read_root():
-    return {"message": "Server is running!"}
+    return {"message": "Server running"}
