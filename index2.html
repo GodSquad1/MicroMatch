@@ -4,339 +4,108 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MicroMatch — Demo</title>
-  <!-- Tailwind CDN (for quick hackathon demo) -->
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="text-2xl">🏆 <strong>MicroMatch</strong></div>
-      <div class="text-sm text-gray-500">Connecting micro-entrepreneurs to the right lenders</div>
-    </div>
-    <div>
-      <button id="open-lender" class="bg-indigo-600 text-white px-4 py-2 rounded">Open Lender Dashboard</button>
-    </div>
-  </header>
-
-  <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Borrower panel -->
-    <section class="bg-white rounded shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Borrower — Apply for a microloan</h2>
-      <form id="borrower-form" class="space-y-3">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="text" name="name" placeholder="Full name" required class="p-2 border rounded"/>
-          <input type="text" name="business" placeholder="Type of business (e.g., vendor, farmer)" class="p-2 border rounded"/>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="number" name="income" placeholder="Monthly income (approx.)" class="p-2 border rounded"/>
-          <input type="text" name="location" placeholder="Location / town" class="p-2 border rounded"/>
-        </div>
-
-        <label class="block">
-          <span class="text-sm text-gray-600">Optional: paste recent M-Pesa / SMS transactions (or upload CSV)</span>
-          <textarea id="txn-data" rows="3" placeholder="e.g., M-Pesa messages or CSV snippet" class="mt-1 p-2 border rounded w-full"></textarea>
-        </label>
-
-        <div class="space-y-2">
-          <div class="text-sm font-medium">Behavior questions (quick)</div>
-          <div class="grid grid-cols-1 gap-2">
-            <select id="q1" class="p-2 border rounded">
-              <option value="0">How often do you save? — Never</option>
-              <option value="1">Sometimes</option>
-              <option value="2">Regularly</option>
-            </select>
-            <select id="q2" class="p-2 border rounded">
-              <option value="0">Repayments on time historically? — Rarely</option>
-              <option value="1">Sometimes</option>
-              <option value="2">Mostly on time</option>
-            </select>
-            <select id="q3" class="p-2 border rounded">
-              <option value="0">Business continuity: High risk</option>
-              <option value="1">Moderate risk</option>
-              <option value="2">Stable</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3 pt-3">
-          <button id="compute-score" type="button" class="bg-green-600 text-white px-4 py-2 rounded">Compute Creditworthiness</button>
-          <button id="submit-apply" type="button" class="bg-indigo-500 text-white px-4 py-2 rounded">Submit Application</button>
-          <div id="spinner" class="hidden text-sm text-gray-500">Scoring...</div>
-        </div>
-
-        <div id="score-card" class="mt-4 hidden p-4 border rounded bg-gray-50">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-xs text-gray-500">Repayment likelihood</div>
-              <div id="score-percent" class="text-2xl font-bold">—</div>
-            </div>
-            <div id="score-breakdown" class="text-sm text-gray-700"></div>
-          </div>
-          <div class="mt-3 bg-white p-3 rounded shadow-sm">
-            <div id="score-bar" class="h-3 rounded bg-gray-200 overflow-hidden">
-              <div id="score-fill" class="h-3 rounded bg-green-500 w-0"></div>
-            </div>
-            <div class="text-xs text-gray-500 mt-2">Transparent factors: transaction history, saving habit, repayment history, business stability</div>
-          </div>
-        </div>
-
-        <p class="text-xs text-gray-400 mt-3">We never share raw phone messages without consent. This demo simulates scoring.</p>
-      </form>
-    </section>
-
-    <!-- Lender / Info panel -->
-    <aside class="bg-white rounded shadow p-6">
-      <h3 class="text-lg font-semibold mb-3">Quick tour</h3>
-      <ol class="list-decimal pl-5 space-y-2 text-sm text-gray-700">
-        <li>Borrower fills form + optional transactions.</li>
-        <li>Click “Compute Creditworthiness” to see a transparent score breakdown.</li>
-        <li>Open the Lender Dashboard to see borrower list, sort by risk/need, and match.</li>
-      </ol>
-
-      <div class="mt-6">
-        <h4 class="font-medium">Chatbot (local language friendly)</h4>
-        <p class="text-sm text-gray-600">Ask: “How does repayment work?”</p>
-        <button id="open-chat" class="mt-2 bg-yellow-500 px-3 py-2 rounded">Open Chat</button>
-      </div>
-
-      <div class="mt-6">
-        <h4 class="font-medium">Stretch note</h4>
-        <p class="text-sm text-gray-600">Optional conceptual stretch: blockchain proof-of-repayment anchor (concept only).</p>
-      </div>
-    </aside>
-  </main>
-
-  <!-- Lender Dashboard modal -->
-  <div id="lender-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-6">
-    <div class="bg-white w-full max-w-4xl rounded shadow-lg p-5">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xl font-semibold">Lender Dashboard</h3>
-        <div class="flex items-center gap-2">
-          <label class="text-sm text-gray-600">Sort by</label>
-          <select id="sort-by" class="p-2 border rounded">
-            <option value="score_desc">Best repayment likelihood</option>
-            <option value="need_desc">Highest need (income low)</option>
-            <option value="recent_desc">Recently applied</option>
-          </select>
-          <button id="close-lender" class="px-3 py-1 border rounded">Close</button>
-        </div>
-      </div>
-
-      <div class="mt-4 grid grid-cols-1 gap-3" id="borrower-list">
-        <!-- dynamic -->
-      </div>
+<!-- Auth Modal (visible immediately) -->
+<div id="auth-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center p-6 z-50">
+  <div class="bg-white w-full max-w-md rounded shadow-lg p-5">
+    <h3 id="auth-title" class="text-lg font-semibold mb-4">Login</h3>
+    <input id="auth-email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3"/>
+    <input id="auth-password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-3"/>
+    <button id="auth-submit" class="bg-indigo-600 text-white px-4 py-2 rounded w-full mb-3">Login</button>
+    <div class="text-sm text-gray-500 text-center">
+      <span id="toggle-auth-text">Don't have an account?</span>
+      <button id="toggle-auth" class="text-indigo-600 font-medium ml-1">Sign Up</button>
     </div>
   </div>
-
-  <!-- Chat modal -->
-  <div id="chat-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-6">
-    <div class="bg-white w-full max-w-xl rounded shadow-lg p-5">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold">MicroMatch Chatbot</h3>
-        <button id="close-chat" class="px-3 py-1 border rounded">Close</button>
-      </div>
-
-      <div class="mt-4">
-        <div id="chat-log" class="h-64 overflow-auto border p-3 rounded bg-gray-50 space-y-2 text-sm"></div>
-        <div class="mt-3 flex gap-2">
-          <input id="chat-input" class="flex-1 p-2 border rounded" placeholder="Ask: How do loan terms work?" />
-          <button id="chat-send" class="bg-indigo-600 text-white px-3 py-2 rounded">Send</button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
-/*
- Demo logic:
-  - computeScore() simulates an ONNX model call & returns a score (0-100).
-  - Submissions are kept in-memory in window.demoBorrowers[] for quick demo.
-  - Replace computeScore() with a fetch() to your Node/ONNX server in production.
-*/
+const firebaseConfig = {
+    apiKey: "AIzaSyBb23ZQezJjCIEAXyz5Ilms-USNP46y8_w",
+    authDomain: "lghacks2.firebaseapp.com",
+    projectId: "lghacks2",
+    storageBucket: "lghacks2.firebasestorage.app",
+    messagingSenderId: "332866350955",
+    appId: "1:332866350955:web:94b4b652da6f11230ce62e",
+    measurementId: "G-23YP64MPTJ"
+};
 
-window.demoBorrowers = [];
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-function simulateOnnxScoring(payload) {
-  // Simple deterministic-ish simulation for demo:
-  // base = q1+q2+q3 (0-6), income effect, txn density if provided
-  const bals = {
-    q: payload.behaviorSum || 0,
-    income: Number(payload.income) || 0,
-    txnLen: payload.txnText ? Math.min(200, payload.txnText.length) : 0,
-  };
-  let base = (bals.q * 12) + Math.min(30, Math.floor(bals.income / 50));
-  base += Math.min(20, Math.floor(bals.txnLen / 20));
-  base = Math.max(5, Math.min(95, base)); // clamp
-  const breakdown = {
-    repayment_history: Math.min(30, bals.q * 10),
-    income_strength: Math.min(30, Math.floor(bals.income / 50)),
-    transactional_signal: Math.min(30, Math.floor(bals.txnLen / 10)),
-    final_adjust: base
-  };
-  return { score: base, breakdown };
-}
+// Login/Sign-up toggle
+let isLogin = true;
+const authModal = document.getElementById('auth-modal');
+const authTitle = document.getElementById('auth-title');
+const authSubmit = document.getElementById('auth-submit');
+const toggleText = document.getElementById('toggle-auth-text');
+const toggleBtn = document.getElementById('toggle-auth');
 
-document.getElementById('compute-score').addEventListener('click', async () => {
-  const spinner = document.getElementById('spinner');
-  spinner.classList.remove('hidden');
-  // gather
-  const form = document.getElementById('borrower-form');
-  const name = form.name.value || 'Anonymous';
-  const business = form.business.value || '—';
-  const income = form.income.value || '';
-  const location = form.location.value || '';
-  const txnText = document.getElementById('txn-data').value || '';
-  const q1 = Number(document.getElementById('q1').value);
-  const q2 = Number(document.getElementById('q2').value);
-  const q3 = Number(document.getElementById('q3').value);
-  const behaviorSum = q1 + q2 + q3;
-
-  // Demo: simulate ONNX score. Replace this with fetch('/score', {body:...})
-  await new Promise(r => setTimeout(r, 700)); // faux delay
-  const result = simulateOnnxScoring({ income, txnText, behaviorSum });
-
-  // show
-  spinner.classList.add('hidden');
-  const card = document.getElementById('score-card');
-  card.classList.remove('hidden');
-  document.getElementById('score-percent').textContent = result.score + '%';
-  document.getElementById('score-fill').style.width = result.score + '%';
-  document.getElementById('score-breakdown').innerHTML = `
-    <div>Repayment: ${result.breakdown.repayment_history}%</div>
-    <div>Income: ${result.breakdown.income_strength}%</div>
-    <div>Txn signal: ${result.breakdown.transactional_signal}%</div>
-  `;
-
-  // store in memory as "draft"
-  window.currentDraft = {
-    id: 'b' + Date.now(),
-    name, business, income, location, txnText,
-    score: result.score,
-    breakdown: result.breakdown,
-    createdAt: new Date().toISOString()
-  };
-});
-
-document.getElementById('submit-apply').addEventListener('click', () => {
-  if (!window.currentDraft) {
-    alert('Compute your score first (so lenders see the transparent breakdown).');
-    return;
+toggleBtn.onclick = () => {
+  isLogin = !isLogin;
+  if (isLogin) {
+    authTitle.textContent = 'Login';
+    authSubmit.textContent = 'Login';
+    toggleText.textContent = "Don't have an account?";
+    toggleBtn.textContent = 'Sign Up';
+  } else {
+    authTitle.textContent = 'Sign Up';
+    authSubmit.textContent = 'Sign Up';
+    toggleText.textContent = 'Already have an account?';
+    toggleBtn.textContent = 'Login';
   }
-  // push into demo store
-  window.demoBorrowers.unshift(window.currentDraft);
-  // reset
-  window.currentDraft = null;
-  document.getElementById('borrower-form').reset();
-  document.getElementById('score-card').classList.add('hidden');
-  alert('Application submitted! Open Lender Dashboard to view.');
-  renderBorrowerList();
-});
+};
 
-/* Lender dashboard logic */
-const lenderModal = document.getElementById('lender-modal');
-document.getElementById('open-lender').addEventListener('click', () => {
-  lenderModal.classList.remove('hidden');
-  lenderModal.classList.add('flex');
-  renderBorrowerList();
-});
-document.getElementById('close-lender').addEventListener('click', () => {
-  lenderModal.classList.add('hidden');
-  lenderModal.classList.remove('flex');
-});
-
-function renderBorrowerList() {
-  const container = document.getElementById('borrower-list');
-  container.innerHTML = '';
-  const sortBy = document.getElementById('sort-by').value;
-  let list = [...window.demoBorrowers];
-  if (sortBy === 'score_desc') list.sort((a,b) => b.score - a.score);
-  if (sortBy === 'need_desc') list.sort((a,b) => (a.income||0) - (b.income||0));
-  if (sortBy === 'recent_desc') list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  if (list.length === 0) {
-    container.innerHTML = '<div class="p-4 text-gray-500">No applicants yet. Have a borrower submit an application to see them here.</div>';
-    return;
+// Submit handler
+authSubmit.onclick = async () => {
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+  try {
+    if (isLogin) {
+      await auth.signInWithEmailAndPassword(email, password);
+    } else {
+      await auth.createUserWithEmailAndPassword(email, password);
+    }
+  } catch (err) {
+    alert(err.message);
   }
+};
 
-  list.forEach(b => {
-    const card = document.createElement('div');
-    card.className = 'p-3 border rounded flex items-center justify-between';
-    card.innerHTML = `
-      <div>
-        <div class="font-semibold">${escapeHtml(b.name)} <span class="text-xs text-gray-500">(${escapeHtml(b.business)})</span></div>
-        <div class="text-sm text-gray-600">Location: ${escapeHtml(b.location)} • Income: ${escapeHtml(b.income)}</div>
-        <div class="text-xs text-gray-500 mt-1">Score: <strong>${b.score}%</strong></div>
-        <div class="text-xs text-gray-400 mt-1">Factors: Repay ${b.breakdown.repayment_history}, Income ${b.breakdown.income_strength}, Txn ${b.breakdown.transactional_signal}</div>
-      </div>
-      <div class="flex flex-col gap-2 items-end">
-        <button class="match-btn bg-blue-600 text-white px-3 py-1 rounded" data-id="${b.id}">Match & Offer</button>
-        <button class="view-btn border px-3 py-1 rounded" data-id="${b.id}">View</button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  // attach actions
-  document.querySelectorAll('.match-btn').forEach(btn => btn.onclick = () => {
-    const id = btn.dataset.id;
-    const b = window.demoBorrowers.find(x => x.id === id);
-    alert(`Matched with ${b.name} (Score: ${b.score}%). In a real app: start disbursement workflow / KYC / loan contract.`);
-  });
-  document.querySelectorAll('.view-btn').forEach(btn => btn.onclick = () => {
-    const id = btn.dataset.id;
-    const b = window.demoBorrowers.find(x => x.id === id);
-    alert(`Detailed view\nName: ${b.name}\nBusiness: ${b.business}\nIncome: ${b.income}\nScore: ${b.score}%\nBreakdown: ${JSON.stringify(b.breakdown)}`);
-  });
-}
-
-/* Chatbot UI (placeholder: replace with OpenAI call in prod) */
-const chatModal = document.getElementById('chat-modal');
-document.getElementById('open-chat').addEventListener('click', () => {
-  chatModal.classList.remove('hidden');
-  chatModal.classList.add('flex');
-  document.getElementById('chat-log').innerHTML = '<div class="text-sm text-gray-500">Hello! Ask me about loans, repayment, or required documents.</div>';
+// Show modal until logged in
+auth.onAuthStateChanged(user => {
+  if (user) {
+    authModal.style.display = 'none';
+  } else {
+    authModal.style.display = 'flex';
+  }
 });
-document.getElementById('close-chat').addEventListener('click', () => {
-  chatModal.classList.add('hidden');
-  chatModal.classList.remove('flex');
-});
-
-document.getElementById('chat-send').addEventListener('click', async () => {
-  const q = document.getElementById('chat-input').value.trim();
-  if (!q) return;
-  addChat('user', q);
-  document.getElementById('chat-input').value = '';
-  addChat('bot', 'Thinking...');
-  // For demo: simple canned responses
-  await new Promise(r => setTimeout(r, 600));
-  const canned = cannedResponse(q);
-  const log = document.getElementById('chat-log');
-  log.lastChild.textContent = canned;
-  log.scrollTop = log.scrollHeight;
-});
-
-function addChat(who, text) {
-  const log = document.getElementById('chat-log');
-  const el = document.createElement('div');
-  el.className = who === 'user' ? 'text-right text-sm' : 'text-left text-sm text-gray-700';
-  el.textContent = text;
-  log.appendChild(el);
-  log.scrollTop = log.scrollHeight;
-}
-
-function cannedResponse(q) {
-  q = q.toLowerCase();
-  if (q.includes('repay')) return 'Repayment: monthly schedules are common; we show expected likelihood and options to stagger repayments. You can request flexible repayment windows with supporting docs.';
-  if (q.includes('documents') || q.includes('kyc')) return 'Documents: ID/passport, business photos, and transaction extracts (optional). We only request what is needed and ask consent before reading SMS/M-Pesa.';
-  if (q.includes('interest') || q.includes('rate')) return 'Interest: lenders set their own rates. MicroMatch shows an estimated fair range based on borrower score and local norms.';
-  return 'Great question — in a real deployment I can explain steps, local-language help, and provide a sample loan offer. (This demo uses canned replies.)';
-}
-
-/* small helpers */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 </script>
+
+<!-- Page content -->
+<header class="bg-white shadow p-4 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div class="text-2xl">🏆 <strong>MicroMatch</strong></div>
+    <div class="text-sm text-gray-500">Connecting micro-entrepreneurs to the right lenders</div>
+  </div>
+  <div>
+    <button id="open-lender" class="bg-indigo-600 text-white px-4 py-2 rounded">Open Lender Dashboard</button>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Borrower panel and lender panel here... -->
+</main>
+
+<!-- Add your borrower form, lender dashboard, and chat modal as in your previous code -->
 
 </body>
 </html>
