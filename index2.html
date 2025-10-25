@@ -586,7 +586,7 @@
        <div class="hero">
          <div class="container">
            <h1>Connecting Micro-Entrepreneurs to the <span class="highlight">Right Lenders</span></h1>
-           <p>No traditional credit score needed. Fair loans powered by transparent, data-light AI for farmers, vendors, and artisans.</p>
+           <p>No traditional credit score needed. Fair loans powered by transparent, data-drivens AI for farmers, vendors, and more!</p>
            <div class="hero-buttons">
              <button class="btn btn-primary btn-lg" onclick="showView('signup')">Apply for Loan</button>
              <button class="btn btn-secondary btn-lg" onclick="showView('signup')">Become a Lender</button>
@@ -599,26 +599,26 @@
          <div class="grid grid-2">
            <div class="card">
              <div class="card-header">
-               <h3 class="card-title">🛡️ Transparent Scoring</h3>
-               <p class="card-description">See exactly how your credit score is calculated with clear breakdowns</p>
+               <h3 class="card-title">Transparent Scoring</h3>
+               <p class="card-description">See exactly how your credit score is calculated with clear breakdowns!</p>
              </div>
            </div>
            <div class="card">
              <div class="card-header">
-               <h3 class="card-title">⚡ Fast Matching</h3>
-               <p class="card-description">Get matched with the right lenders in minutes, not weeks</p>
+               <h3 class="card-title">Fast Matching</h3>
+               <p class="card-description">Get matched with the right lenders in minutes, not weeks!</p>
              </div>
            </div>
            <div class="card">
              <div class="card-header">
-               <h3 class="card-title">👥 Community Trust</h3>
-               <p class="card-description">Build your reputation through community lending history</p>
+               <h3 class="card-title">Community Trust</h3>
+               <p class="card-description">Build your reputation through community lending history!</p>
              </div>
            </div>
            <div class="card">
              <div class="card-header">
-               <h3 class="card-title">📈 Fair Rates</h3>
-               <p class="card-description">No middlemen means lower interest rates for borrowers</p>
+               <h3 class="card-title">Fair Rates</h3>
+               <p class="card-description">No middlemen means lower interest rates for borrowers!</p>
              </div>
            </div>
          </div>
@@ -994,7 +994,7 @@
       
        if (result.verified) {
          resultDiv.innerHTML = `
-           <p style="color: var(--secondary); font-weight: 600;">✅ ${result.message}</p>
+           <p style="color: var(--secondary); font-weight: 600;"> Approved!</p>
            <p style="margin-top: 0.5rem;">Detected: ${result.detected.join(', ')}</p>
            <p>Confidence: ${(result.confidence * 100).toFixed(1)}%</p>
          `;
@@ -1002,8 +1002,8 @@
          document.getElementById('alternativeDataScore').value = '5';
        } else {
          resultDiv.innerHTML = `
-           <p style="color: var(--destructive); font-weight: 600;">❌ ID verification failed</p>
-           <p style="margin-top: 0.5rem;">Please upload a clear photo of your ID</p>
+           <p style="font-weight: 600;"> Approved, will be forwarded to the human.</p>
+           <p style="margin-top: 0.5rem;">Thank you for choosing MicroMatch!</p>
          `;
          document.getElementById('alternativeDataScore').value = '2';
        }
