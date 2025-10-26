@@ -637,25 +637,25 @@
         <div class="grid grid-2">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">🔍 Transparent Scoring</h3>
+              <h3 class="card-title">Transparent Scoring</h3>
               <p class="card-description">See exactly how your credit score is calculated with clear breakdowns!</p>
             </div>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">⚡ Fast Matching</h3>
+              <h3 class="card-title"> Fast Matching</h3>
               <p class="card-description">Get matched with the right lenders in minutes, not weeks!</p>
             </div>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">🤝 Community Trust</h3>
+              <h3 class="card-title">Community Trust</h3>
               <p class="card-description">Build your reputation through community lending history!</p>
             </div>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">💵 Fair Rates</h3>
+              <h3 class="card-title"> Fair Rates</h3>
               <p class="card-description">No middlemen means lower interest rates for borrowers!</p>
             </div>
           </div>
@@ -741,7 +741,7 @@
 
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">📊 Business Revenue & Loans</h3>
+            <h3 class="card-title"> Business Revenue & Loans</h3>
             <p class="card-description">Track your monthly revenue and loan history</p>
           </div>
           <div class="chart-container">
@@ -1061,7 +1061,7 @@
     reader.readAsDataURL(file);
 
     const resultDiv = document.getElementById('yoloResult');
-    resultDiv.innerHTML = '<p>🔄 Analyzing ID with YOLO...</p>';
+    resultDiv.innerHTML = '<p> Analyzing ID with YOLO...</p>';
     resultDiv.classList.remove('hidden');
 
     try {
@@ -1069,14 +1069,14 @@
       
       if (result.verified) {
         resultDiv.innerHTML = `
-          <p style="color: hsl(var(--accent)); font-weight: 600;">✅ Approved!</p>
+          <p style="color: hsl(var(--accent)); font-weight: 600;"> Approved!</p>
           <p style="margin-top: 0.5rem;">Detected: ${result.detected.join(', ')}</p>
           <p>Confidence: ${(result.confidence * 100).toFixed(1)}%</p>
         `;
         document.getElementById('alternativeDataScore').value = '5';
       } else {
         resultDiv.innerHTML = `
-          <p style="font-weight: 600;">✅ Approved, will be forwarded to the human.</p>
+          <p style="font-weight: 600;"> Approved, will be forwarded to the human.</p>
           <p style="margin-top: 0.5rem;">Thank you for choosing MicroMatch!</p>
         `;
         document.getElementById('alternativeDataScore').value = '2';
