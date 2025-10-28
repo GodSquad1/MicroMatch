@@ -5,7 +5,7 @@ from PIL import Image
 import io
 
 # Load your custom YOLO model
-model = YOLO("dtv2.pt")
+# model = YOLO("dv2.pt")
 
 
 
